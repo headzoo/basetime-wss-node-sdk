@@ -19,13 +19,7 @@ Plugins can be created using Firebase HTTP endpoints. HTTP endpoint plugins use 
 ```typescript
 import * as functions from 'firebase-functions';
 import express from 'express';
-import {
-    IEvent,
-    Event,
-    Level,
-    wssMiddleware,
-    wssErrorMiddleware
-} from '@basetime/wss-node-sdk';
+import { wssMiddleware, wssErrorMiddleware } from '@basetime/wss-node-sdk';
 import { PaymentEvent } from './events';
 
 // Define the manifest which describes the plugin and the events
