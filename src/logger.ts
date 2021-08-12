@@ -54,11 +54,11 @@ export default class Logger {
    * @param source
    */
   constructor(
-    protected readonly contextId: string,
-    protected readonly clubId: string,
-    protected readonly source: string,
-    protected readonly consoleLevel: Level = Level.DEBUG,
-    protected readonly remoteLevel: Level = Level.INFO,
+    protected contextId: string,
+    protected clubId: string,
+    protected source: string,
+    protected consoleLevel: Level = Level.DEBUG,
+    protected remoteLevel: Level = Level.INFO,
   ) {
     this.emulator = process.env.FUNCTIONS_EMULATOR === 'true';
     this.projectId = process.env.GCLOUD_PROJECT;
@@ -66,6 +66,27 @@ export default class Logger {
     const emulatorURL: string = `localhost:5001/${this.projectId}/us-central1/`;
     this.cloudFunctionsURL = this.emulator ? emulatorURL : cloudURL;
   }
+
+  /**
+   * @param contextId
+   */
+  public setContextId = (contextId: string) => {
+    this.contextId = contextId;
+  };
+
+  /**
+   * @param clubId
+   */
+  public setClubId = (clubId: string) => {
+    this.clubId = clubId;
+  };
+
+  /**
+   * @param source
+   */
+  public setSource = (source: string) => {
+    this.source = source;
+  };
 
   /**
    * @param message
