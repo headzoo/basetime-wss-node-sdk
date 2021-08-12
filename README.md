@@ -14,9 +14,7 @@ yarn add @basetime/wss-node-sdk
 ```
 
 ### Creating an HTTP plugin
-Plugins can be created using Firebase HTTP endpoints.
-
-HTTP endpoint plugins use Express middleware to decode incoming events and encode outgoing results. The `wssMiddleware` and `wssErrorMiddleware` middleware functions are imported and wired up to express.
+Plugins can be created using Firebase HTTP endpoints. HTTP endpoint plugins use Express middleware to decode incoming events and encode outgoing results. The `wssMiddleware` and `wssErrorMiddleware` middleware functions are imported and wired up to express.
 
 ```typescript
 import * as functions from 'firebase-functions';
