@@ -1,0 +1,23 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "declarationMap": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
+  },
+  "ts-node": {
+    "files": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
