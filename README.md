@@ -74,6 +74,7 @@ The `wssMiddleware` middleware function adds a `wss` property to the incoming re
 * `req.wss.dispatch()` - Used to dispatch events to other plugins and event handlers.
 * `req.wss.attributes` - A `Record` of attributes passed to the plugin.
 * `req.wss.manifest` - Instance of the plugin manifest.
+* `req.wss.pluginVersion` - Version of the plugin being dispatched. Plugins should be able to handle previous versions of themselves for short periods of time to account for the upgrading process.
 
 The `wssErrorMiddleware` captures errors which were generated during the event. The errors are logged and sent back to WSS. This middleware must be added last in the Express middleware chain.
 
@@ -128,4 +129,4 @@ The `onPublish` callback receives the standard `Message` and `EventContext` para
 * `wss.dispatch()` - Used to dispatch events to other plugins and event handlers.
 * `wss.attributes` - A `Record` of attributes passed to the plugin.
 * `wss.manifest` - Instance of the plugin manifest.
-
+* `wss.pluginVersion` - Version of the plugin being dispatched. Plugins should be able to handle previous versions of themselves for short periods of time to account for the upgrading process.

@@ -5,7 +5,14 @@ import { NextFunction, Request, Response } from 'express';
 import { IEvent } from './event';
 import { Manifest, ManifestEventName } from './manifest';
 import Logger, { Level } from './logger';
-import { HeaderWssAttrib, HeaderWssEvent, HeaderWssVersion, JsonEventKey, JsonReturnTopic, } from './http';
+import {
+  HeaderWssAttrib,
+  HeaderWssEvent,
+  HeaderWssVersion,
+  JsonEventKey,
+  JsonReturnTopic,
+  JsonPluginVersion,
+} from './http';
 
 declare global {
   namespace Express {
@@ -21,6 +28,7 @@ export interface Wss {
   dispatch: (e: IEvent) => void;
   attributes: Record<string, string>;
   manifest: Manifest;
+  pluginVersion: string;
 }
 
 export interface WssMiddlewareArgs {
@@ -94,6 +102,7 @@ export const wssMiddleware = (
       attributes,
       dispatch: (e: IEvent) => {},
       manifest,
+      pluginVersion: data[JsonPluginVersion],
     };
 
     if (!req.header(HeaderWssEvent) || res.headersSent) {
@@ -206,6 +215,7 @@ export const wssPubSub = (
         attributes,
         dispatch: (e: IEvent) => {},
         manifest,
+        pluginVersion: json[JsonPluginVersion],
       };
 
       logger.debug('Received', json);

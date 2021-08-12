@@ -7,7 +7,8 @@ import {
   HeaderWssVersion,
   HeaderWssAttrib,
   JsonEventKey,
-  JsonReturnTopic
+  JsonReturnTopic,
+  JsonPluginVersion,
 } from './http';
 import Logger, { Level } from './logger';
 
@@ -32,4 +33,5 @@ export {
   HeaderWssVersion,
   JsonEventKey,
   JsonReturnTopic,
+  JsonPluginVersion,
 }
