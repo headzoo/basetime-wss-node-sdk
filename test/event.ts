@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { Event } from '../src/event';
 
-describe('Event', () => {
+describe('event', () => {
   describe('#stopPropagation()', () => {
     it('should return false', () => {
       const e = new Event('payments.QUERY');
