@@ -13,8 +13,8 @@ or
 yarn add @basetime/wss-node-sdk
 ```
 
-### Creating an HTTP plugin
-Plugins can be created using Firebase HTTP endpoints. HTTP endpoint plugins use Express middleware to decode incoming events and encode outgoing results. The `wssMiddleware` and `wssErrorMiddleware` middleware functions are imported and wired up to express.
+### Creating an HTTP plugin with Express
+Plugins can be created using Firebase HTTP endpoints with Express middleware. The sdk middleware decodes incoming events and encodes outgoing results. The `wssMiddleware` and `wssErrorMiddleware` middleware functions are imported and wired up to express.
 
 ```typescript
 import * as functions from 'firebase-functions';
@@ -78,6 +78,54 @@ The `wssMiddleware` middleware function adds a `wss` property to the incoming re
 
 The `wssErrorMiddleware` captures errors which were generated during the event. The errors are logged and sent back to WSS. This middleware must be added last in the Express middleware chain.
 
+
+### Creating an HTTP plugin with onRequest
+Plugins can be created using Firebase HTTP endpoints. The sdk middleware decodes incoming events and encodes outgoing results. The `wssOnRequest`  function...
+
+```typescript
+import * as functions from 'firebase-functions';
+import { Request } from 'express';
+import { IEvent, Event, wssOnRequest } from '@basetime/wss-node-sdk';
+import { PaymentEvent } from './events';
+
+// Define the manifest which describes the plugin and the events
+// it subscribes to. The subscriptions are a map of event names and
+// the http endpoints that handle those events.
+// The manifest is passed to the wssOnRequest middleware, which returns
+// a function that will used in the https.onRequest() function.
+const wssPublish = wssOnRequest({
+    manifestVersion: '1.0',
+    name: 'CyberSourceIntegrationHttp',
+    subsystem: 'payments',
+    description: '',
+    version: '1.0',
+    subscriptions: {
+        'payment.PAYMENT_QUERY': '/cyberSourcePaymentRequest',
+    },
+});
+
+// This endpoint handles the payment.PAYMENT_QUERY event.
+export const cyberSourcePaymentRequest = functions.https.onRequest(wssPublish((req: Request) => {
+    const event = req.wss.event<PaymentEvent>();
+    if (event.action === 'token') {
+        event.token = '123456';
+        event.stopPropagation();
+    } else {
+        req.wss.logger.error(`Unknown "${event.action}"`);
+        req.wss.dispatch(new Event('someOtherEvent'));
+    }
+}));
+```
+
+The `wssOnRequest` middleware function adds a `wss` property to the incoming request, i.e. `req.wss`. The object contains the following properties.
+
+* `req.wss.event<T>()` - Returns an instance of `IEvent` that was dispatched to the endpoint.
+* `req.wss.logger` - An instance of the sdk `Logger` class used for logging.
+* `req.wss.dispatch()` - Used to dispatch events to other plugins and event handlers.
+* `req.wss.attributes` - A `Record` of attributes passed to the plugin.
+* `req.wss.manifest` - Instance of the plugin manifest.
+* `req.wss.pluginVersion` - Version of the plugin being dispatched. Plugins should be able to handle previous versions of themselves for short periods of time to account for the upgrading process.
+
 ### Creating a pubsub plugin
 Plugins can also be created using Firebase pubsub.
 
@@ -91,7 +139,7 @@ import { Message } from 'firebase-functions/lib/providers/pubsub';
 // it subscribes to. The subscriptions are a map of event names and
 // the pubsub topics that handle those events.
 // The manifest is passed to the wssPubSub middleware, which returns
-// a function that will used in the topic.onPublish() callback.
+// a function that will used in the topic.onPublish() function.
 const wssPublish = wssPubSub({
   manifestVersion: '1.0',
   name: 'CyberSourceIntegration',

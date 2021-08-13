@@ -50,6 +50,8 @@ export const createWssFromRequest = (
   manifest: Manifest,
   args: WssMiddlewareArgs,
   ): Wss => {
+  const e = { ...data[JsonEventKey] };
+
   /**
    * Returns the event which was dispatched to the endpoint.
    */
@@ -58,8 +60,6 @@ export const createWssFromRequest = (
       throw new Error('This endpoint does not return an event.');
     }
 
-    const e = { ...data[JsonEventKey] } as T;
-
     /**
      * Stops event propagation.
      */
@@ -67,7 +67,7 @@ export const createWssFromRequest = (
       e.isPropagationStopped = true;
     };
 
-    return e;
+    return e as T;
   }
 
   // Parses attribute headers, which are in the format "x-wss-attrib-sessionid: sessionId:12345"
@@ -195,6 +195,83 @@ export const wssErrorMiddleware = () => {
     // We still want Express to throw the error.
     next(err);
   };
+}
+
+/**
+ * Middleware for the firebase function onRequest() method.
+ *
+ * @param manifest
+ * @param args
+ */
+export const wssOnRequest = (
+  manifest: Manifest,
+  args: WssMiddlewareArgs = {
+    consoleLogLevel: Level.DEBUG,
+    remoteLogLevel: Level.INFO,
+  },
+) => {
+  return (func: (req: Request, res: Response) => any) => {
+    return (req: Request, res: Response): Promise<void> => {
+      let data = req.body;
+      if (typeof req.body !== 'object') {
+        try {
+          data = JSON.parse(req.body);
+        } catch (error) {
+          // return next(error);
+        }
+      }
+
+      // Generate the wss object.
+      const headers = {};
+      Object.keys(req.headers).forEach((key) => {
+        headers[key] = Array.isArray(req.headers[key]) ? req.headers[key][0] : req.headers[key];
+      });
+      req.wss = createWssFromRequest(data, headers, manifest, args);
+
+      // Checks if this request is for an event endpoint by looking for the HeaderWssEvent
+      // header. Pass through to the endpoint function when the request isn't for an event endpoint.
+      if (!req.header(HeaderWssEvent) || res.headersSent) {
+        return func(req, res);
+      }
+
+      // Check for required message id for event endpoints.
+      const messageId = req.header(HeaderWssEvent);
+      if (data[JsonEventKey] === undefined) {
+        const err = new Error(`Body ${JsonEventKey} not found in request.`);
+        req.wss.logger.error(err.message);
+        throw err;
+      }
+
+      // Check if the request is for the plugin manifest.
+      if (data[JsonEventKey].name === ManifestEventName) {
+        req.wss.logger.debug('Returning', manifest);
+        res.header(HeaderWssEvent, messageId);
+        res.header(HeaderWssVersion, manifest.version);
+        res.json({
+          [JsonEventKey]: manifest,
+        });
+        return;
+      }
+
+      const e = req.wss.event();
+      try {
+        func(req, res);
+      } catch (error) {
+        e.errors.push(error.toString());
+        req.wss.logger.error(error);
+      }
+
+      // Returns the event to the event dispatcher.
+      if (!res.headersSent) {
+        req.wss.logger.debug('Returning', e);
+        res.header(HeaderWssEvent, messageId);
+        res.header(HeaderWssVersion, manifest.version);
+        res.json({
+          [JsonEventKey]: e,
+        });
+      }
+    }
+  }
 }
 
 /**

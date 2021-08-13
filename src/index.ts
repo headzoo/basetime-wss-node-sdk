@@ -1,7 +1,13 @@
 import { IEvent, Event } from './event';
 import { EventHandlerCallback, IEventHandler, EventHandler, AnyEventHandler } from './handler';
 import { Manifest, ManifestEvent, ManifestEventName } from './manifest';
-import { wssMiddleware, wssErrorMiddleware, wssPubSub, Wss } from './middleware';
+import {
+  wssMiddleware,
+  wssErrorMiddleware,
+  wssOnRequest,
+  wssPubSub,
+  Wss,
+} from './middleware';
 import {
   HeaderWssEvent,
   HeaderWssVersion,
@@ -28,6 +34,7 @@ export {
   wssMiddleware,
   wssPubSub,
   wssErrorMiddleware,
+  wssOnRequest,
   HeaderWssEvent,
   HeaderWssAttrib,
   HeaderWssVersion,
