@@ -2,6 +2,12 @@ WSS Node SDK
 ============
 Software development kit for creating WSS plugins. WSS and plugins communicate with each other using dispatched events over HTTP or pubsub, and while that can be done without an sdk for max flexibility, the WSS sdk makes the process easier and foolproof.
 
+* [Installing](#installing)
+* [Creating an HTTP plugin with Express](#creating-an-http-plugin-with-express)
+* [Creating an HTTP plugin with onRequest](#creating-an-http-plugin-with-onrequest)
+* [Creating a plugin with pubsub](#creating-a-plugin-with-pubsub)
+
+
 ### Installing
 Install the sdk using npm or yarn.
 
@@ -126,7 +132,7 @@ The `wssOnRequest` middleware function adds a `wss` property to the incoming req
 * `req.wss.manifest` - Instance of the plugin manifest.
 * `req.wss.pluginVersion` - Version of the plugin being dispatched. Plugins should be able to handle previous versions of themselves for short periods of time to account for the upgrading process.
 
-### Creating a pubsub plugin
+### Creating a plugin with pubsub
 Plugins can also be created using Firebase pubsub.
 
 ```typescript
