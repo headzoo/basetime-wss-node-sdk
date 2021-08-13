@@ -1,11 +1,12 @@
 WSS Node SDK
 ============
-Software development kit for creating WSS plugins. WSS and plugins communicate with each other using dispatched events over HTTP or pubsub, and while that can be done without an sdk for max flexibility, the WSS sdk makes the process easier and foolproof.
+Software development kit for creating WSS plugins. WSS and plugins communicate with each other using dispatched events over HTTP or pubsub, and while that can be done without the sdk for max flexibility the sdk makes the process easier and foolproof.
 
 * [Installing](#installing)
-* [Creating an HTTP plugin with Express](#creating-an-http-plugin-with-express)
-* [Creating an HTTP plugin with onRequest](#creating-an-http-plugin-with-onrequest)
+* [Creating a plugin with Express](#creating-a-plugin-with-express)
+* [Creating a plugin with onRequest](#creating-a-plugin-with-onrequest)
 * [Creating a plugin with pubsub](#creating-a-plugin-with-pubsub)
+* [Creating a plugin with document triggers](#creating-a-plugin-with-document-triggers)
 
 
 ### Installing
@@ -19,7 +20,7 @@ or
 yarn add @basetime/wss-node-sdk
 ```
 
-### Creating an HTTP plugin with Express
+### Creating a plugin with Express
 Plugins can be created using Firebase HTTP endpoints with Express middleware. The sdk middleware decodes incoming events and encodes outgoing results. The `wssMiddleware` and `wssErrorMiddleware` middleware functions are imported and wired up to express.
 
 ```typescript
@@ -85,7 +86,7 @@ The `wssMiddleware` middleware function adds a `wss` property to the incoming re
 The `wssErrorMiddleware` captures errors which were generated during the event. The errors are logged and sent back to WSS. This middleware must be added last in the Express middleware chain.
 
 
-### Creating an HTTP plugin with onRequest
+### Creating a plugin with onRequest
 Plugins can be created using Firebase HTTP endpoints. The sdk middleware decodes incoming events and encodes outgoing results. The `wssOnRequest`  function...
 
 ```typescript
@@ -184,3 +185,6 @@ The `onPublish` callback receives the standard `Message` and `EventContext` para
 * `wss.attributes` - A `Record` of attributes passed to the plugin.
 * `wss.manifest` - Instance of the plugin manifest.
 * `wss.pluginVersion` - Version of the plugin being dispatched. Plugins should be able to handle previous versions of themselves for short periods of time to account for the upgrading process.
+
+### Creating a plugin with document triggers
+Coming soon...
